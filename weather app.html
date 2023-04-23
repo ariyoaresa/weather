@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Weather App</title>
+	<style>
+        body{
+            background-color: #f5f5f5;
+        }
+        .container {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 20px;
+	text-align: center;
+}
+
+form {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+input[type="text"] {
+	padding: 10px;
+	border-radius: 5px 0 0 5px;
+	border: none;
+	width: 200px;
+}
+
+button[type="submit"] {
+	padding: 10px;
+	border-radius: 0 5px 5px 0;
+	border: none;
+	background-color: #4CAF50;
+	color: white;
+	cursor: pointer;
+}
+
+.weather-info {
+	background-color: #f5f5f5;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+p {
+	margin: 0;
+}
+
+#city-name {
+	font-size: 2em;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+#temperature {
+	font-size: 3em;
+	margin-bottom: 10px;
+}
+
+#weather-description {
+	font-size: 1.5em;
+	margin-bottom: 10px;
+}
+
+#error-message {
+	color: red;
+	font-weight: bold;
+	margin-top: 10px;
+	font-family: cursive;
+}
+
+    </style>
+</head>
+<body>
+	<div class="container">
+		<h1>Weather App</h1>
+		<form>
+			<input type="text" id="city-input" placeholder="Enter city name">
+			<button type="submit" id="submit-button">Get weather</button>
+		</form>
+		<div class="weather-info">
+			<p id="city-name"></p>
+			<p id="temperature"></p>
+			<p id="weather-description"></p>
+			<p id="error-message"></p>
+		</div>
+	</div>
+
+	<script>
+		const apiKey = 'ea7c84d7c05fafe8efcdbf468c1d27a4';
+		const form = document.querySelector('form');
+		const cityInput = document.querySelector('#city-input');
+		const submitButton = document.querySelector('#submit-button');
+		const cityName = document.querySelector('#city-name');
+		const temperature = document.querySelector('#temperature');
+		const weatherDescription = document.querySelector('#weather-description');
+		const errorMessage = document.querySelector('#error-message');
+
+		form.addEventListener('submit', e => {
+			e.preventDefault();
+			const city = cityInput.value;
+			const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					if (data.cod === '404') {
+						// Display error message if city is not found
+						errorMessage.textContent = 'City not found. Please try again.';
+						cityName.textContent = '';
+						temperature.textContent = '';
+						weatherDescription.textContent = '';
+					} else {
+						// Display weather data
+						errorMessage.textContent = '';
+						cityName.textContent = data.name;
+						temperature.textContent = `${Math.round(data.main.temp)}°C`;
+						weatherDescription.textContent = data.weather[0].description;
+					}
+				})
+				.catch(error => {
+					// Display error message if there's an API error
+					errorMessage.textContent = 'An error occurred. Please check your internet connection and try again later.';
+					cityName.textContent = '';
+					temperature.textContent = '';
+					weatherDescription.textContent = '';
+				});
+		});
+	</script>
+</body>
+</html>
